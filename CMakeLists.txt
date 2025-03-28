@@ -6,6 +6,8 @@ project(3d_renderer)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 
+add_compile_options(-Wall -std=c99)
+
 add_subdirectory(deps/SDL EXCLUDE_FROM_ALL)
 
 file(GLOB SRC_FILES "src/*.c")
