@@ -10,6 +10,8 @@ add_compile_options(-Wall -std=c99)
 
 add_subdirectory(deps/SDL EXCLUDE_FROM_ALL)
 
+include_directories(include)
+
 file(GLOB SRC_FILES "src/*.c")
 
 add_executable(3d_renderer ${SRC_FILES})
