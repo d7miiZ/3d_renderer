@@ -19,7 +19,8 @@ bool init_window(void);
 void cleanup(void);
 void draw_pixel(uint32_t x, uint32_t y, uint32_t color);
 void draw_grid(uint32_t width);
-void draw_rect(uint32_t width, uint32_t height, uint32_t color);
+void draw_rect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t color);
 void render_color_buffer(void);
+void clear_color_buffer(uint32_t color);
 
 #endif
