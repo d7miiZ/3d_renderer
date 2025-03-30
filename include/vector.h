@@ -13,6 +13,6 @@ typedef struct {
     float z;
 } vector3_t;
 
-vector2_t simple_project(vector3_t vec3);
+vector2_t orthographic_projection(vector3_t vec3);
 
 #endif
