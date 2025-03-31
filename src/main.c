@@ -8,6 +8,8 @@
 #define CUBE_DIMENSION 9 * 9 * 9
 
 vector3_t camera = { .x = 0, .y = 0, .z = -5};
+vector3_t cube_rotation = { .x = 0, .y = 0, .z = 0};
+
 vector3_t cube[CUBE_DIMENSION];
 vector2_t projected_cube[CUBE_DIMENSION];
 
@@ -46,10 +48,17 @@ void process_input(void) {
 }
 
 void update(void) {
+    cube_rotation.x += 0.01;
+    cube_rotation.y += 0.01;
+    cube_rotation.z += 0.01;
+
     for (size_t i = 0; i < CUBE_DIMENSION; i++) {
         vector3_t cube_point = cube[i];
-        cube_point.z -= camera.z;
-        projected_cube[i] = perspective_projection(cube_point, 640);
+        vector3_t transformed_cube_point = vec3_rotate_x(cube_point, cube_rotation.x);
+        transformed_cube_point = vec3_rotate_y(transformed_cube_point, cube_rotation.y);
+        transformed_cube_point = vec3_rotate_z(transformed_cube_point, cube_rotation.z);
+        transformed_cube_point.z -= camera.z;
+        projected_cube[i] = perspective_projection(transformed_cube_point, 640);
     }
 }
 
