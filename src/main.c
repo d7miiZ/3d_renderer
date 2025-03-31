@@ -14,18 +14,6 @@ vector2_t projected_cube[CUBE_DIMENSION];
 bool is_running = false;
 
 bool setup(void) {
-    color_buffer = calloc(window_width * window_height, sizeof(uint32_t));
-    if (!color_buffer) {
-        fprintf(stderr, "Error in creating color buffer memory\n");
-        return false;
-    }
-    
-    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, window_width, window_height);
-    if (!texture) {
-        fprintf(stderr, "Error in creating texture %s\n", SDL_GetError());
-        return false;
-    }
-    
     uint16_t count = 0;
     for (float x = -1; x <= 1; x += 0.25) {
         for (float y = -1; y <= 1; y += 0.25) {

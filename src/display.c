@@ -46,6 +46,18 @@ bool init_window(void) {
         return false;
     }
      SDL_SetWindowFullscreen(window, true);
+
+    color_buffer = calloc(window_width * window_height, sizeof(uint32_t));
+    if (!color_buffer) {
+        fprintf(stderr, "Error in creating color buffer memory\n");
+        return false;
+    }
+    
+    texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, window_width, window_height);
+    if (!texture) {
+        fprintf(stderr, "Error in creating texture %s\n", SDL_GetError());
+        return false;
+    }
     return true;
 }
 
