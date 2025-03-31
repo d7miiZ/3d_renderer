@@ -70,25 +70,25 @@ void draw_pixel(uint32_t x, uint32_t y, uint32_t color) {
 }
 
 void draw_grid(uint32_t width) {
-    for (size_t i = 0; i < window_height; i++) {
-        for (size_t j = 0; j < window_width; j++) {
-            if (i % width == 0 || j % width == 0) {
-                draw_pixel(j, i, 0xFF808080);
+    for (size_t y = 0; y < window_height; y++) {
+        for (size_t x = 0; x < window_width; x++) {
+            if (x % width == 0 || y % width == 0) {
+                draw_pixel(x, y, 0xFF808080);
             }else{
-                draw_pixel(j, i, 0xFF000000);
+                draw_pixel(x, y, 0xFF000000);
             }
         }
     }
 }
 
 void draw_rect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t color) {
-    size_t height_start = x;
+    size_t height_start = y;
     size_t height_end = height_start + height;
-    size_t width_start = y;
+    size_t width_start = x;
     size_t width_end = width_start + width;
-    for (size_t i = height_start; i < height_end; i++) {
-        for (size_t j = width_start; j < width_end; j++) {
-            draw_pixel(j, i, color);
+    for (size_t y = height_start; y < height_end; y++) {
+        for (size_t x = width_start; x < width_end; x++) {
+            draw_pixel(x, y, color);
         }
     }
 }
