@@ -7,6 +7,7 @@
 
 #define CUBE_DIMENSION 9 * 9 * 9
 
+vector3_t camera = { .x = 0, .y = 0, .z = -5};
 vector3_t cube[CUBE_DIMENSION];
 vector2_t projected_cube[CUBE_DIMENSION];
 
@@ -58,7 +59,9 @@ void process_input(void) {
 
 void update(void) {
     for (size_t i = 0; i < CUBE_DIMENSION; i++) {
-        projected_cube[i] = orthographic_projection(cube[i]);
+        vector3_t cube_point = cube[i];
+        cube_point.z -= camera.z;
+        projected_cube[i] = perspective_projection(cube_point, 640);
     }
 }
 
