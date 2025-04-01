@@ -7,6 +7,8 @@
 
 #define CUBE_DIMENSION 9 * 9 * 9
 
+uint64_t prev_frame_time = 0;
+
 vector3_t camera = { .x = 0, .y = 0, .z = -5};
 vector3_t cube_rotation = { .x = 0, .y = 0, .z = 0};
 
@@ -48,6 +50,15 @@ void process_input(void) {
 }
 
 void update(void) {
+    int64_t time_to_wait = FRAME_TIME - (SDL_GetTicks() - prev_frame_time);
+
+    if (time_to_wait > 0) {
+        SDL_Delay(time_to_wait);
+    }
+    
+    
+    prev_frame_time = SDL_GetTicks();
+
     cube_rotation.x += 0.01;
     cube_rotation.y += 0.01;
     cube_rotation.z += 0.01;
