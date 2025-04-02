@@ -4,30 +4,19 @@
 
 #include <display.h>
 #include <vector.h>
-
-#define CUBE_DIMENSION 9 * 9 * 9
+#include <mesh.h>
+#include <triangle.h>
 
 uint64_t prev_frame_time = 0;
 
 vector3_t camera = { .x = 0, .y = 0, .z = -5};
 vector3_t cube_rotation = { .x = 0, .y = 0, .z = 0};
 
-vector3_t cube[CUBE_DIMENSION];
-vector2_t projected_cube[CUBE_DIMENSION];
+triangle_t triangles[MESH_FACES];
 
 bool is_running = false;
 
 bool setup(void) {
-    uint16_t count = 0;
-    for (float x = -1; x <= 1; x += 0.25) {
-        for (float y = -1; y <= 1; y += 0.25) {
-            for (float z = -1; z <= 1; z += 0.25) {
-                vector3_t vec = { .x = x, .y = y, .z = z};
-                cube[count++] = vec;
-            }
-        }
-    }
-    
     return true;
 }
 
@@ -56,29 +45,47 @@ void update(void) {
         SDL_Delay(time_to_wait);
     }
     
-    
     prev_frame_time = SDL_GetTicks();
 
     cube_rotation.x += 0.01;
     cube_rotation.y += 0.01;
     cube_rotation.z += 0.01;
 
-    for (size_t i = 0; i < CUBE_DIMENSION; i++) {
-        vector3_t cube_point = cube[i];
-        vector3_t transformed_cube_point = vec3_rotate_x(cube_point, cube_rotation.x);
-        transformed_cube_point = vec3_rotate_y(transformed_cube_point, cube_rotation.y);
-        transformed_cube_point = vec3_rotate_z(transformed_cube_point, cube_rotation.z);
-        transformed_cube_point.z -= camera.z;
-        projected_cube[i] = perspective_projection(transformed_cube_point, 640);
+    for (size_t i = 0; i < MESH_FACES; i++) {
+        vector3_t vertices[3];
+        triangle_t projected_triangle;
+        face_t face = mesh_faces[i];
+
+        vertices[0] = mesh_vertices[--face.a];
+        vertices[1] = mesh_vertices[--face.b];
+        vertices[2] = mesh_vertices[--face.c];
+
+        for (size_t j = 0; j < 3; j++) {
+            vector3_t transformed_vertex = vertices[j];
+            vector2_t projected_vertex;
+
+            transformed_vertex = vec3_rotate_x(transformed_vertex, cube_rotation.x);
+            transformed_vertex = vec3_rotate_y(transformed_vertex, cube_rotation.y);
+            transformed_vertex = vec3_rotate_z(transformed_vertex, cube_rotation.z);
+            transformed_vertex.z -= camera.z;
+
+            projected_vertex = perspective_projection(transformed_vertex, 640);
+
+            projected_triangle.vertices[j] = projected_vertex;
+        }
+
+        triangles[i] = projected_triangle;
     }
 }
 
 void render(void) {
     draw_grid(20);
 
-    for (size_t i = 0; i < CUBE_DIMENSION; i++) {
-        vector2_t projection = projected_cube[i];
-        draw_rect(projection.x, projection.y, 4, 4, 0xFFFFFF00);
+    for (size_t i = 0; i < MESH_FACES; i++) {
+        triangle_t triangle = triangles[i];
+        for (size_t j = 0; j < 3; j++) {
+            draw_rect(triangle.vertices[j].x, triangle.vertices[j].y, 4, 4, 0xFFFFFF00);
+        }
     }
     
     render_color_buffer();
