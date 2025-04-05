@@ -69,6 +69,26 @@ void draw_pixel(uint32_t x, uint32_t y, uint32_t color) {
     color_buffer[(window_width * y) + x] = color;
 }
 
+// DDA algo
+void draw_line(int32_t x0, int32_t y0, int32_t x1, int32_t y1, uint32_t color) {
+    int32_t delta_x = (x1 - x0);
+    int32_t delta_y = (y1 - y0);
+
+    int32_t side_len = abs(delta_x) >= abs(delta_y) ? abs(delta_x) : abs(delta_y);
+
+    float x_inc = delta_x / (float)side_len;
+    float y_inc = delta_y / (float)side_len;
+
+    float cur_x = x0;
+    float cur_y = y0;
+
+    for (size_t i = 0; i < side_len; i++) {
+        draw_pixel(SDL_round(cur_x), SDL_round(cur_y), color);
+        cur_x += x_inc;
+        cur_y += y_inc;
+    }
+}
+
 void draw_grid(uint32_t width) {
     for (size_t y = 0; y < window_height; y++) {
         for (size_t x = 0; x < window_width; x++) {
@@ -91,6 +111,12 @@ void draw_rect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t
             draw_pixel(x, y, color);
         }
     }
+}
+
+void draw_triangle(vector2_t vec1, vector2_t vec2, vector2_t vec3, uint32_t color) {
+    draw_line(vec1.x, vec1.y, vec2.x, vec2.y, color);
+    draw_line(vec2.x, vec2.y, vec3.x, vec3.y, color);
+    draw_line(vec1.x, vec1.y, vec3.x, vec3.y, color);
 }
 
 void render_color_buffer(void) {

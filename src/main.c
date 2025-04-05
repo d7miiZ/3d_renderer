@@ -86,6 +86,7 @@ void render(void) {
         for (size_t j = 0; j < 3; j++) {
             draw_rect(triangle.vertices[j].x, triangle.vertices[j].y, 4, 4, 0xFFFFFF00);
         }
+        draw_triangle(triangle.vertices[0], triangle.vertices[1], triangle.vertices[2], 0xFFFF00FF);
     }
     
     render_color_buffer();
