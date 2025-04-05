@@ -11,13 +11,13 @@
 uint64_t prev_frame_time = 0;
 
 vector3_t camera = { .x = 0, .y = 0, .z = -5};
-vector3_t cube_rotation = { .x = 0, .y = 0, .z = 0};
 
 triangle_t *triangles = NULL;
 
 bool is_running = false;
 
 bool setup(void) {
+    load_cube_mesh();
     return true;
 }
 
@@ -50,26 +50,26 @@ void update(void) {
 
     triangles = NULL;
 
-    cube_rotation.x += 0.01;
-    cube_rotation.y += 0.01;
-    cube_rotation.z += 0.01;
+    mesh.rotations.x += 0.01;
+    mesh.rotations.y += 0.01;
+    mesh.rotations.z += 0.01;
 
-    for (size_t i = 0; i < MESH_FACES; i++) {
+    for (size_t i = 0; i < array_length(mesh.faces); i++) {
         vector3_t vertices[3];
         triangle_t projected_triangle;
-        face_t face = mesh_faces[i];
+        face_t face = mesh.faces[i];
 
-        vertices[0] = mesh_vertices[--face.a];
-        vertices[1] = mesh_vertices[--face.b];
-        vertices[2] = mesh_vertices[--face.c];
+        vertices[0] = mesh.vertices[--face.a];
+        vertices[1] = mesh.vertices[--face.b];
+        vertices[2] = mesh.vertices[--face.c];
 
         for (size_t j = 0; j < 3; j++) {
             vector3_t transformed_vertex = vertices[j];
             vector2_t projected_vertex;
 
-            transformed_vertex = vec3_rotate_x(transformed_vertex, cube_rotation.x);
-            transformed_vertex = vec3_rotate_y(transformed_vertex, cube_rotation.y);
-            transformed_vertex = vec3_rotate_z(transformed_vertex, cube_rotation.z);
+            transformed_vertex = vec3_rotate_x(transformed_vertex, mesh.rotations.x);
+            transformed_vertex = vec3_rotate_y(transformed_vertex, mesh.rotations.y);
+            transformed_vertex = vec3_rotate_z(transformed_vertex, mesh.rotations.z);
             transformed_vertex.z -= camera.z;
 
             projected_vertex = perspective_projection(transformed_vertex, 640);

@@ -1,6 +1,8 @@
 #include <stdlib.h>
 
 #include <display.h>
+#include <mesh.h>
+#include <darray.h>
 
 SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
@@ -131,8 +133,11 @@ void clear_color_buffer(uint32_t color) {
 }
 
 void cleanup(void) {
-    free(color_buffer);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
+    
+    free(color_buffer);
+    array_free(mesh.faces);
+    array_free(mesh.vertices);
 }
