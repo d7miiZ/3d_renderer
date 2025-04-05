@@ -6,13 +6,14 @@
 #include <vector.h>
 #include <mesh.h>
 #include <triangle.h>
+#include <darray.h>
 
 uint64_t prev_frame_time = 0;
 
 vector3_t camera = { .x = 0, .y = 0, .z = -5};
 vector3_t cube_rotation = { .x = 0, .y = 0, .z = 0};
 
-triangle_t triangles[MESH_FACES];
+triangle_t *triangles = NULL;
 
 bool is_running = false;
 
@@ -47,6 +48,8 @@ void update(void) {
     
     prev_frame_time = SDL_GetTicks();
 
+    triangles = NULL;
+
     cube_rotation.x += 0.01;
     cube_rotation.y += 0.01;
     cube_rotation.z += 0.01;
@@ -74,20 +77,22 @@ void update(void) {
             projected_triangle.vertices[j] = projected_vertex;
         }
 
-        triangles[i] = projected_triangle;
+        array_push(triangles, projected_triangle);
     }
 }
 
 void render(void) {
     draw_grid(20);
 
-    for (size_t i = 0; i < MESH_FACES; i++) {
+    for (size_t i = 0; i < array_length(triangles); i++) {
         triangle_t triangle = triangles[i];
         for (size_t j = 0; j < 3; j++) {
             draw_rect(triangle.vertices[j].x, triangle.vertices[j].y, 4, 4, 0xFFFFFF00);
         }
         draw_triangle(triangle.vertices[0], triangle.vertices[1], triangle.vertices[2], 0xFFFF00FF);
     }
+
+    array_free(triangles);
     
     render_color_buffer();
 
