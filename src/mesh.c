@@ -70,11 +70,6 @@ void load_obj_file(const char *path) {
         if (token == NULL) {
             continue;
         }
-        
-        size_t token_len = strlen(token);
-        if (token_len != 1) {
-            continue;
-        }
 
         if (strcmp(token, "v") == 0) {
             vector3_t vec3;

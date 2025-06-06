@@ -55,3 +55,6 @@ build
 .vscode
 # clangd
 .cache/
+
+# allow 3d assets
+!3d_assets/*.obj
