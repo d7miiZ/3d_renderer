@@ -16,8 +16,8 @@ triangle_t *triangles = NULL;
 
 bool is_running = false;
 
-bool setup(void) {
-    load_cube_mesh();
+bool setup(const char *path) {
+    load_obj_file(path);
     return true;
 }
 
@@ -100,9 +100,17 @@ void render(void) {
 }
 
 int main(int argc, char const *argv[]) {
+    if (argc < 2) {
+        printf("Usage: %s <file_path>\n", argv[0]);
+        return 1;
+    }
+
+    const char *filepath = argv[1];
+    printf("File path passed: %s\n", filepath);
+
     is_running = init_window();
 
-    setup();
+    setup(filepath);
 
     while (is_running) {
         process_input();

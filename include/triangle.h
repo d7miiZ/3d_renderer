@@ -4,6 +4,8 @@
 
 #include <stdint.h>
 
+#include <vector.h>
+
 typedef struct {
     uint32_t a;
     uint32_t b;
