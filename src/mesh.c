@@ -50,6 +50,7 @@ void load_cube_mesh() {
     }
 }
 
+// TODO: just use sscanf :/
 void load_obj_file(const char *path) {
     if (access(path, F_OK) != 0) {
         fprintf(stderr, "Not enough permission on file %s\n", path);
