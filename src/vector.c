@@ -43,6 +43,15 @@ float vec2_dot(vector2_t a, vector2_t b) {
     return (a.x * b.x) + (a.y * b.y);
 }
 
+void vec2_normalize(vector2_t *vec2) {
+    float vec_len = vec2_len(*vec2);
+    
+    vec2->x /= vec_len;
+    vec2->y /= vec_len;
+}
+
+// ===================================================== VEC3 Funcs ====================================
+
 float vec3_len(vector3_t vec3) {
     return sqrt((vec3.x * vec3.x) + (vec3.y * vec3.y) + (vec3.z * vec3.z));
 }
@@ -94,6 +103,14 @@ vector3_t vec3_div(vector3_t vec3, float scalar) {
         .z = vec3.z / scalar,
     };
     return res;
+}
+
+void vec3_normalize(vector3_t *vec3) {
+    float vec_len = vec3_len(*vec3);
+    
+    vec3->x /= vec_len;
+    vec3->y /= vec_len;
+    vec3->z /= vec_len;
 }
 
 vector2_t orthographic_projection(vector3_t vec3, uint32_t fov_factor) {

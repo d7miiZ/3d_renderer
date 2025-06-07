@@ -21,6 +21,9 @@ vector2_t vec2_sub(vector2_t a, vector2_t b);
 vector2_t vec2_mul(vector2_t vec2, float scalar);
 vector2_t vec2_div(vector2_t vec2, float scalar);
 float vec2_dot(vector2_t a, vector2_t b);
+void vec2_normalize(vector2_t *vec2);
+
+// ===================================================== VEC3 Funcs ====================================
 
 vector2_t orthographic_projection(vector3_t vec3, uint32_t fov_factor);
 vector2_t perspective_projection(vector3_t vec3, uint32_t fov_factor);
@@ -36,5 +39,6 @@ vector3_t vec3_mul(vector3_t vec3, float scalar);
 vector3_t vec3_div(vector3_t vec3, float scalar);
 vector3_t vec3_cross(vector3_t a, vector3_t b);
 float vec3_dot(vector3_t a, vector3_t b);
+void vec3_normalize(vector3_t *vec3);
 
 #endif
