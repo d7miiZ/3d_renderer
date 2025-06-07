@@ -3,6 +3,99 @@
 #include <vector.h>
 #include <display.h>
 
+float vec2_len(vector2_t vec2) {
+    return sqrt((vec2.x * vec2.x) + (vec2.y * vec2.y));
+}
+
+vector2_t vec2_add(vector2_t a, vector2_t b) {
+    vector2_t res = {
+        .x = a.x + b.x,
+        .y = a.y + b.y,
+    };
+    return res;
+}
+
+vector2_t vec2_sub(vector2_t a, vector2_t b) {
+    vector2_t res = {
+        .x = a.x - b.x,
+        .y = a.y - b.y,
+    };
+    return res;
+}
+
+vector2_t vec2_mul(vector2_t vec2, float scalar) {
+    vector2_t res = {
+        .x = vec2.x * scalar,
+        .y = vec2.y * scalar,
+    };
+    return res;
+}
+
+vector2_t vec2_div(vector2_t vec2, float scalar) {
+    vector2_t res = {
+        .x = vec2.x / scalar,
+        .y = vec2.y / scalar,
+    };
+    return res;
+}
+
+float vec2_dot(vector2_t a, vector2_t b) {
+    return (a.x * b.x) + (a.y * b.y);
+}
+
+float vec3_len(vector3_t vec3) {
+    return sqrt((vec3.x * vec3.x) + (vec3.y * vec3.y) + (vec3.z * vec3.z));
+}
+
+vector3_t vec3_add(vector3_t a, vector3_t b) {
+    vector3_t res = {
+        .x = a.x + b.x,
+        .y = a.y + b.y,
+        .z = a.z + b.z,
+    };
+    return res;
+}
+
+vector3_t vec3_sub(vector3_t a, vector3_t b) {
+    vector3_t res = {
+        .x = a.x - b.x,
+        .y = a.y - b.y,
+        .z = a.z - b.z,
+    };
+    return res;
+}
+
+vector3_t vec3_cross(vector3_t a, vector3_t b) {
+    vector3_t res = {
+        .x = (a.y * b.z) - (a.z * b.y),
+        .y = (a.z * b.x) - (a.x * b.z),
+        .z = (a.x * b.y) - (a.y * b.x),
+    };
+    return res;
+}
+
+float vec3_dot(vector3_t a, vector3_t b) {
+    return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
+}
+
+vector3_t vec3_mul(vector3_t vec3, float scalar) {
+    vector3_t res = {
+        .x = vec3.x * scalar,
+        .y = vec3.y * scalar,
+        .z = vec3.z * scalar,
+    };
+    return res;
+}
+
+vector3_t vec3_div(vector3_t vec3, float scalar) {
+    vector3_t res = {
+        .x = vec3.x / scalar,
+        .y = vec3.y / scalar,
+        .z = vec3.z / scalar,
+    };
+    return res;
+}
+
 vector2_t orthographic_projection(vector3_t vec3, uint32_t fov_factor) {
     vector2_t vec2;
     if (vec3.z == 0) {
