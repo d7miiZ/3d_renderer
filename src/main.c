@@ -10,7 +10,7 @@
 
 uint64_t prev_frame_time = 0;
 
-vector3_t camera = { .x = 0, .y = 0, .z = -5};
+vector3_t camera = { .x = 0, .y = 0, .z = 0};
 
 triangle_t *triangles = NULL;
 
@@ -56,26 +56,46 @@ void update(void) {
 
     for (size_t i = 0; i < array_length(mesh.faces); i++) {
         vector3_t vertices[3];
+        vector3_t transformed_vertices[3];
         triangle_t projected_triangle;
         face_t face = mesh.faces[i];
 
-        vertices[0] = mesh.vertices[--face.a];
-        vertices[1] = mesh.vertices[--face.b];
-        vertices[2] = mesh.vertices[--face.c];
+        vertices[0] = mesh.vertices[face.a - 1];
+        vertices[1] = mesh.vertices[face.b - 1];
+        vertices[2] = mesh.vertices[face.c - 1];
 
         for (size_t j = 0; j < 3; j++) {
             vector3_t transformed_vertex = vertices[j];
-            vector2_t projected_vertex;
 
             transformed_vertex = vec3_rotate_x(transformed_vertex, mesh.rotations.x);
             transformed_vertex = vec3_rotate_y(transformed_vertex, mesh.rotations.y);
             transformed_vertex = vec3_rotate_z(transformed_vertex, mesh.rotations.z);
-            transformed_vertex.z -= camera.z;
+            transformed_vertex.z += 5;
 
-            projected_vertex = perspective_projection(transformed_vertex, 640);
-
-            projected_triangle.vertices[j] = projected_vertex;
+            transformed_vertices[j] = transformed_vertex;
         }
+
+        vector3_t vec_a = transformed_vertices[0];
+        vector3_t vec_b = transformed_vertices[1];
+        vector3_t vec_c = transformed_vertices[2];
+
+        vector3_t vec_ab = vec3_sub(vec_b, vec_a);
+        vector3_t vec_ac = vec3_sub(vec_c, vec_a);
+
+        vector3_t vec_normal = vec3_cross(vec_ab, vec_ac);
+
+        vector3_t camera_ray = vec3_sub(camera, vec_a);
+
+        float alignment_val = vec3_dot(vec_normal, camera_ray);
+
+        // Backface culling
+        if (alignment_val < 0) {
+            continue;
+        }
+
+        for (size_t j = 0; j < 3; j++) {
+            projected_triangle.vertices[j] = perspective_projection(transformed_vertices[j], 640);;
+        }        
 
         array_push(triangles, projected_triangle);
     }
