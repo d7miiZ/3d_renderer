@@ -16,4 +16,6 @@ typedef struct {
     vector2_t vertices[3];
 } triangle_t;
 
+void draw_filled_triangle(vector2_t vec0, vector2_t vec1, vector2_t vec2, uint32_t color);
+
 #endif
