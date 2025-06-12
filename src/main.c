@@ -10,6 +10,20 @@
 
 uint64_t prev_frame_time = 0;
 
+union {
+    struct {
+        uint8_t wireframe: 1;
+        uint8_t dots: 1;
+        uint8_t fill: 1;
+        uint8_t backface_culling: 1;
+        uint8_t resrev1: 1;
+        uint8_t resrev2: 1;
+        uint8_t resrev3: 1;
+        uint8_t resrev4: 1;
+    } options;
+    uint8_t flags;
+} render_options = { .options = {0, 0, 1, 1, 0, 0, 0, 0} };
+
 vector3_t camera = { .x = 0, .y = 0, .z = 0};
 
 triangle_t *triangles = NULL;
@@ -32,6 +46,32 @@ void process_input(void) {
     case SDL_EVENT_KEY_DOWN:
         if (event.key.key == SDLK_ESCAPE) {
             is_running = false;
+        }
+        if (event.key.key == SDLK_1) {
+            render_options.options.dots = 1;
+            render_options.options.wireframe = 1;
+            render_options.options.fill = 0;
+        }
+        if (event.key.key == SDLK_2) {
+            render_options.options.dots = 0;
+            render_options.options.wireframe = 1;
+            render_options.options.fill = 0;
+        }
+        if (event.key.key == SDLK_3) {
+            render_options.options.dots = 0;
+            render_options.options.wireframe = 0;
+            render_options.options.fill = 1;
+        }
+        if (event.key.key == SDLK_4) {
+            render_options.options.dots = 0;
+            render_options.options.wireframe = 1;
+            render_options.options.fill = 1;
+        }
+        if (event.key.key == SDLK_C) {
+            render_options.options.backface_culling = 1;
+        }
+        if (event.key.key == SDLK_D) {
+            render_options.options.backface_culling = 0;
         }
         break;
     default:
@@ -75,27 +115,29 @@ void update(void) {
             transformed_vertices[j] = transformed_vertex;
         }
 
-        vector3_t vec_a = transformed_vertices[0];
-        vector3_t vec_b = transformed_vertices[1];
-        vector3_t vec_c = transformed_vertices[2];
+        if (render_options.options.backface_culling) {
+            vector3_t vec_a = transformed_vertices[0];
+            vector3_t vec_b = transformed_vertices[1];
+            vector3_t vec_c = transformed_vertices[2];
 
-        vector3_t vec_ab = vec3_sub(vec_b, vec_a);
-        vector3_t vec_ac = vec3_sub(vec_c, vec_a);
-        vec3_normalize(&vec_ab);
-        vec3_normalize(&vec_ac);
+            vector3_t vec_ab = vec3_sub(vec_b, vec_a);
+            vector3_t vec_ac = vec3_sub(vec_c, vec_a);
+            vec3_normalize(&vec_ab);
+            vec3_normalize(&vec_ac);
 
-        vector3_t vec_normal = vec3_cross(vec_ab, vec_ac);
-        vec3_normalize(&vec_normal);
+            vector3_t vec_normal = vec3_cross(vec_ab, vec_ac);
+            vec3_normalize(&vec_normal);
 
-        vector3_t camera_ray = vec3_sub(camera, vec_a);
+            vector3_t camera_ray = vec3_sub(camera, vec_a);
 
-        float alignment_val = vec3_dot(vec_normal, camera_ray);
+            float alignment_val = vec3_dot(vec_normal, camera_ray);
 
-        // Backface culling
-        if (alignment_val < 0) {
-            continue;
+            // Backface culling
+            if (alignment_val < 0) {
+                continue;
+            }    
         }
-
+    
         for (size_t j = 0; j < 3; j++) {
             projected_triangle.vertices[j] = perspective_projection(transformed_vertices[j], 640);;
         }        
@@ -109,11 +151,17 @@ void render(void) {
 
     for (size_t i = 0; i < array_length(triangles); i++) {
         triangle_t triangle = triangles[i];
-        // for (size_t j = 0; j < 3; j++) {
-        //     draw_rect(triangle.vertices[j].x, triangle.vertices[j].y, 4, 4, 0xFFFFFF00);
-        // }
-        draw_filled_triangle(triangle.vertices[0], triangle.vertices[1], triangle.vertices[2], 0xFFFF00FF);
-        draw_triangle(triangle.vertices[0], triangle.vertices[1], triangle.vertices[2], 0xFFFFFFFF);
+        if (render_options.options.dots) {
+            for (size_t j = 0; j < 3; j++) {
+                draw_rect(triangle.vertices[j].x, triangle.vertices[j].y, 4, 4, 0xFFFFFF00);
+            }
+        }
+        if (render_options.options.wireframe) {
+            draw_triangle(triangle.vertices[0], triangle.vertices[1], triangle.vertices[2], 0xFFFFFFFF);
+        }
+        if (render_options.options.fill) {
+            draw_filled_triangle(triangle.vertices[0], triangle.vertices[1], triangle.vertices[2], 0xFFFF00FF);
+        }
     }
 
     array_free(triangles);
