@@ -30,6 +30,12 @@ triangle_t *triangles = NULL;
 
 bool is_running = false;
 
+int _depth_sort(const void *_a, const void *_b) {
+    triangle_t const *a = _a, *b = _b;
+
+    return b->avg_depth - a->avg_depth;
+}
+
 bool setup(const char *path) {
     load_obj_file(path);
     return true;
@@ -85,6 +91,7 @@ void update(void) {
     if (time_to_wait > 0) {
         SDL_Delay(time_to_wait);
     }
+    float sum_z_components = 0;
     
     prev_frame_time = SDL_GetTicks();
 
@@ -95,8 +102,8 @@ void update(void) {
     mesh.rotations.z += 0.01;
 
     for (size_t i = 0; i < array_length(mesh.faces); i++) {
-        vector3_t vertices[3];
-        vector3_t transformed_vertices[3];
+        vector3_t vertices[FACE_NUM_VERTICES];
+        vector3_t transformed_vertices[FACE_NUM_VERTICES];
         triangle_t projected_triangle;
         face_t face = mesh.faces[i];
 
@@ -104,7 +111,7 @@ void update(void) {
         vertices[1] = mesh.vertices[face.b - 1];
         vertices[2] = mesh.vertices[face.c - 1];
 
-        for (size_t j = 0; j < 3; j++) {
+        for (size_t j = 0; j < FACE_NUM_VERTICES; j++) {
             vector3_t transformed_vertex = vertices[j];
 
             transformed_vertex = vec3_rotate_x(transformed_vertex, mesh.rotations.x);
@@ -138,12 +145,18 @@ void update(void) {
             }    
         }
     
-        for (size_t j = 0; j < 3; j++) {
+        for (size_t j = 0; j < FACE_NUM_VERTICES; j++) {
             projected_triangle.vertices[j] = perspective_projection(transformed_vertices[j], 640);;
-        }        
+            sum_z_components += transformed_vertices[j].z;
+        }
+        projected_triangle.avg_depth = sum_z_components / FACE_NUM_VERTICES;
 
         array_push(triangles, projected_triangle);
     }
+
+    // Using painters algo to sort faces
+    // TODO: Use z-buffer
+    qsort(triangles, array_length(triangles), sizeof(triangle_t), _depth_sort);
 }
 
 void render(void) {
@@ -152,7 +165,7 @@ void render(void) {
     for (size_t i = 0; i < array_length(triangles); i++) {
         triangle_t triangle = triangles[i];
         if (render_options.options.dots) {
-            for (size_t j = 0; j < 3; j++) {
+            for (size_t j = 0; j < FACE_NUM_VERTICES; j++) {
                 draw_rect(triangle.vertices[j].x, triangle.vertices[j].y, 4, 4, 0xFFFFFF00);
             }
         }

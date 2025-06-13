@@ -4,6 +4,9 @@
 
 #include <stdint.h>
 
+#define VEC3_NUM_COMPONENTS 3
+#define VEC2_NUM_COMPONENTS 2
+
 typedef struct {
     float x;
     float y;
