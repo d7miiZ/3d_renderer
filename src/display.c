@@ -8,7 +8,7 @@ SDL_Window *window = NULL;
 SDL_Renderer *renderer = NULL;
 SDL_Texture *texture = NULL;
 
-uint32_t *color_buffer = NULL;
+color_t *color_buffer = NULL;
 
 uint32_t window_width = 800;
 uint32_t window_height = 600;
@@ -63,7 +63,7 @@ bool init_window(void) {
     return true;
 }
 
-void draw_pixel(uint32_t x, uint32_t y, uint32_t color) {
+void draw_pixel(uint32_t x, uint32_t y, color_t color) {
     if (x > window_width || y > window_height) {
         return;
     }
@@ -72,7 +72,7 @@ void draw_pixel(uint32_t x, uint32_t y, uint32_t color) {
 }
 
 // DDA algo
-void draw_line(int32_t x0, int32_t y0, int32_t x1, int32_t y1, uint32_t color) {
+void draw_line(int32_t x0, int32_t y0, int32_t x1, int32_t y1, color_t color) {
     int32_t delta_x = (x1 - x0);
     int32_t delta_y = (y1 - y0);
 
@@ -103,7 +103,7 @@ void draw_grid(uint32_t width) {
     }
 }
 
-void draw_rect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t color) {
+void draw_rect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, color_t color) {
     size_t height_start = y;
     size_t height_end = height_start + height;
     size_t width_start = x;
@@ -115,7 +115,7 @@ void draw_rect(uint32_t x, uint32_t y, uint32_t width, uint32_t height, uint32_t
     }
 }
 
-void draw_triangle(vector2_t vec1, vector2_t vec2, vector2_t vec3, uint32_t color) {
+void draw_triangle(vector2_t vec1, vector2_t vec2, vector2_t vec3, color_t color) {
     draw_line(vec1.x, vec1.y, vec2.x, vec2.y, color);
     draw_line(vec2.x, vec2.y, vec3.x, vec3.y, color);
     draw_line(vec1.x, vec1.y, vec3.x, vec3.y, color);
@@ -126,7 +126,7 @@ void render_color_buffer(void) {
     SDL_RenderTexture(renderer, texture, NULL, NULL);
 }
 
-void clear_color_buffer(uint32_t color) {
+void clear_color_buffer(color_t color) {
     for (size_t i = 0; i < (window_width * window_height); i++) {
         color_buffer[i] = color;
     }

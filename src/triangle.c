@@ -8,7 +8,7 @@ void _vec2_swap(vector2_t *a, vector2_t*b) {
     *b = temp;
 }
 
-void _fill_flat_bottom_triangle(vector2_t vec0, vector2_t vec1, vector2_t vec2, uint32_t color) {
+void _fill_flat_bottom_triangle(vector2_t vec0, vector2_t vec1, vector2_t vec2, color_t color) {
     float inv_slope1 =  (float) (vec1.x - vec0.x) / (vec1.y - vec0.y), inv_slope2 = (float) (vec2.x - vec0.x) / (vec2.y - vec0.y);
     float x_start = vec0.x, x_end = vec0.x;
 
@@ -19,7 +19,7 @@ void _fill_flat_bottom_triangle(vector2_t vec0, vector2_t vec1, vector2_t vec2, 
     }
 }
 
-void _fill_flat_top_triangle(vector2_t vec0, vector2_t vec1, vector2_t vec2, uint32_t color) {
+void _fill_flat_top_triangle(vector2_t vec0, vector2_t vec1, vector2_t vec2, color_t color) {
     float inv_slope1 =  (float) (vec2.x - vec0.x) / (vec2.y - vec0.y), inv_slope2 = (float) (vec2.x - vec1.x) / (vec2.y - vec1.y);
     float x_start = vec2.x, x_end = vec2.x;
 
@@ -31,7 +31,7 @@ void _fill_flat_top_triangle(vector2_t vec0, vector2_t vec1, vector2_t vec2, uin
 }
 
 // Fill triangle using flat bottom + flat top method
-void draw_filled_triangle(vector2_t vec0, vector2_t vec1, vector2_t vec2, uint32_t color) {
+void draw_filled_triangle(vector2_t vec0, vector2_t vec1, vector2_t vec2, color_t color) {
     vector2_t m;
     if (vec0.y > vec1.y) {
         _vec2_swap(&vec0, &vec1);

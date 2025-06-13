@@ -19,6 +19,8 @@ extern uint32_t *color_buffer;
 extern uint32_t window_width;
 extern uint32_t window_height;
 
+typedef uint32_t color_t;
+
 bool init_window(void);
 void cleanup(void);
 void draw_pixel(uint32_t x, uint32_t y, uint32_t color);
