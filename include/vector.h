@@ -18,6 +18,15 @@ typedef struct {
     float z;
 } vector3_t;
 
+typedef struct {
+    float x;
+    float y;
+    float z;
+    float w;
+} vector4_t;
+
+// ===================================================== VEC2 Funcs ====================================
+
 float vec2_len(vector2_t vec2);
 vector2_t vec2_add(vector2_t a, vector2_t b);
 vector2_t vec2_sub(vector2_t a, vector2_t b);
@@ -43,5 +52,11 @@ vector3_t vec3_div(vector3_t vec3, float scalar);
 vector3_t vec3_cross(vector3_t a, vector3_t b);
 float vec3_dot(vector3_t a, vector3_t b);
 void vec3_normalize(vector3_t *vec3);
+
+vector3_t vec3_from_vec4(vector4_t vec4);
+
+// ===================================================== VEC4 Funcs ====================================
+
+vector4_t vec4_from_vec3(vector3_t vec3);
 
 #endif

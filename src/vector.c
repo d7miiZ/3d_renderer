@@ -160,3 +160,22 @@ vector3_t vec3_rotate_z(vector3_t vec3, float angle) {
     return rotated_vec;
 
 }
+
+vector3_t vec3_from_vec4(vector4_t vec4) {
+    vector3_t vec3 = {
+        .x = vec4.x,
+        .y = vec4.y,
+        .z = vec4.z,
+    };
+    return vec3;
+}
+
+vector4_t vec4_from_vec3(vector3_t vec3) {
+    vector4_t vec4 = {
+        .x = vec3.x,
+        .y = vec3.y,
+        .z = vec3.z,
+        .w = 1,
+    };
+    return vec4;
+}
