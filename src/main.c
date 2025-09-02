@@ -7,6 +7,7 @@
 #include <mesh.h>
 #include <triangle.h>
 #include <darray.h>
+#include <matrix.h>
 
 uint64_t prev_frame_time = 0;
 
@@ -101,9 +102,14 @@ void update(void) {
     mesh.rotations.y += 0.01;
     mesh.rotations.z += 0.01;
 
+    mesh.scale.x += 0.002;
+    mesh.scale.y += 0.002;
+
+    mat4_t scale_matrix = mat4_scale(mesh.scale.x, mesh.scale.y, mesh.scale.z);
+
     for (size_t i = 0; i < array_length(mesh.faces); i++) {
         vector3_t vertices[FACE_NUM_VERTICES];
-        vector3_t transformed_vertices[FACE_NUM_VERTICES];
+        vector4_t transformed_vertices[FACE_NUM_VERTICES];
         triangle_t projected_triangle;
         face_t face = mesh.faces[i];
 
@@ -112,20 +118,19 @@ void update(void) {
         vertices[2] = mesh.vertices[face.c - 1];
 
         for (size_t j = 0; j < FACE_NUM_VERTICES; j++) {
-            vector3_t transformed_vertex = vertices[j];
+            vector4_t transformed_vertex = vec4_from_vec3(vertices[j]);
 
-            transformed_vertex = vec3_rotate_x(transformed_vertex, mesh.rotations.x);
-            transformed_vertex = vec3_rotate_y(transformed_vertex, mesh.rotations.y);
-            transformed_vertex = vec3_rotate_z(transformed_vertex, mesh.rotations.z);
+            transformed_vertex = mat4_multiply_vector(scale_matrix, transformed_vertex);
+
             transformed_vertex.z += 5;
 
             transformed_vertices[j] = transformed_vertex;
         }
 
         if (render_options.options.backface_culling) {
-            vector3_t vec_a = transformed_vertices[0];
-            vector3_t vec_b = transformed_vertices[1];
-            vector3_t vec_c = transformed_vertices[2];
+            vector3_t vec_a = vec3_from_vec4(transformed_vertices[0]);
+            vector3_t vec_b = vec3_from_vec4(transformed_vertices[1]);
+            vector3_t vec_c = vec3_from_vec4(transformed_vertices[2]);
 
             vector3_t vec_ab = vec3_sub(vec_b, vec_a);
             vector3_t vec_ac = vec3_sub(vec_c, vec_a);
@@ -146,7 +151,7 @@ void update(void) {
         }
     
         for (size_t j = 0; j < FACE_NUM_VERTICES; j++) {
-            projected_triangle.vertices[j] = perspective_projection(transformed_vertices[j], 640);;
+            projected_triangle.vertices[j] = perspective_projection(vec3_from_vec4(transformed_vertices[j]), 640);;
             sum_z_components += transformed_vertices[j].z;
         }
         projected_triangle.avg_depth = sum_z_components / FACE_NUM_VERTICES;
