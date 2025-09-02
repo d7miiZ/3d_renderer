@@ -46,7 +46,7 @@ void draw_filled_triangle(vector2_t vec0, vector2_t vec1, vector2_t vec2, color_
     if (vec1.y == vec2.y) {
         _fill_flat_bottom_triangle(vec0, vec1, vec2, color);
     } else if (vec0.y == vec1.y) {
-        _fill_flat_top_triangle(vec1, vec1, vec2, color);
+        _fill_flat_top_triangle(vec0, vec1, vec2, color);
     } else {
         m.y = vec1.y;
         m.x = ((float) ((vec2.x - vec0.x) * (vec1.y - vec0.y)) / (float) (vec2.y - vec0.y)) + vec0.x; // Using triangle similarity to get m.x value
