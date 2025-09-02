@@ -19,6 +19,14 @@ mat4_t mat4_scale(float sx, float sy, float sz) {
     return m;
 }
 
+mat4_t mat4_translation(float tx, float ty, float tz) {
+    mat4_t m = mat4_identity();
+    m.m[0][3] = tx;
+    m.m[1][3] = ty;
+    m.m[2][3] = tz;
+    return m;
+}
+
 vector4_t mat4_multiply_vector(mat4_t m, vector4_t v) {
     vector4_t result;
     result.x = m.m[0][0] * v.x + m.m[0][1] * v.y + m.m[0][2] * v.z + m.m[0][3] * v.w;
