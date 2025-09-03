@@ -117,7 +117,6 @@ void update(void) {
     for (size_t i = 0; i < array_length(mesh.faces); i++) {
         vector3_t vertices[FACE_NUM_VERTICES];
         vector4_t transformed_vertices[FACE_NUM_VERTICES];
-        triangle_t projected_triangle;
         face_t face = mesh.faces[i];
 
         vertices[0] = mesh.vertices[face.a - 1];
@@ -162,12 +161,30 @@ void update(void) {
                 continue;
             }    
         }
-    
+
+        vector4_t projected_vertices[FACE_NUM_VERTICES];
         for (size_t j = 0; j < FACE_NUM_VERTICES; j++) {
-            projected_triangle.vertices[j] = perspective_projection(vec3_from_vec4(transformed_vertices[j]), 640);;
+            mat4_t projection_matrix = mat4_perspective(FOV, window_aspect_ratio, Z_NEAR, Z_FAR);
+
+            projected_vertices[j] = mat4_multiply_projection(projection_matrix, transformed_vertices[j]);
+
+            projected_vertices[j].x *= (window_width / 2.0);
+            projected_vertices[j].y *= (window_height / 2.0);
+
+            projected_vertices[j].x += (window_width / 2.0);
+            projected_vertices[j].y += (window_height / 2.0);
+            
             sum_z_components += transformed_vertices[j].z;
         }
-        projected_triangle.avg_depth = sum_z_components / FACE_NUM_VERTICES;
+
+        triangle_t projected_triangle = {
+            .vertices = {
+                {projected_vertices[0].x, projected_vertices[0].y},
+                {projected_vertices[1].x, projected_vertices[1].y},
+                {projected_vertices[2].x, projected_vertices[2].y},
+            },
+            .avg_depth = sum_z_components / FACE_NUM_VERTICES,
+        };
 
         array_push(triangles, projected_triangle);
     }

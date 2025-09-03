@@ -13,8 +13,10 @@ mat4_t mat4_translation(float tx, float ty, float tz);
 mat4_t mat4_rotation_x(float angle);
 mat4_t mat4_rotation_y(float angle);
 mat4_t mat4_rotation_z(float angle);
+mat4_t mat4_perspective(float fov, float aspect_ratio, float znear, float zfar);
 
 vector4_t mat4_multiply_vector(mat4_t m, vector4_t v);
+vector4_t mat4_multiply_projection(mat4_t projection_matrix, vector4_t v);
 mat4_t mat4_multiply_matrix(mat4_t a, mat4_t b);
 
 #endif

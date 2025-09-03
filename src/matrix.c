@@ -56,6 +56,16 @@ mat4_t mat4_rotation_z(float angle) {
     return m;
 }
 
+mat4_t mat4_perspective(float fov, float aspect_ratio, float znear, float zfar) {
+    mat4_t m = {{{0}}};
+    m.m[0][0] = aspect_ratio * ( 1 / tan(fov / 2));
+    m.m[1][1] = 1 / tan(fov / 2);
+    m.m[2][2] = zfar / (zfar - znear);
+    m.m[2][3] = (-zfar * znear) / (zfar - znear);
+    m.m[3][2] = 1.0;
+    return m;
+}
+
 vector4_t mat4_multiply_vector(mat4_t m, vector4_t v) {
     vector4_t result;
     result.x = m.m[0][0] * v.x + m.m[0][1] * v.y + m.m[0][2] * v.z + m.m[0][3] * v.w;
@@ -65,13 +75,21 @@ vector4_t mat4_multiply_vector(mat4_t m, vector4_t v) {
     return result;
 }
 
+vector4_t mat4_multiply_projection(mat4_t projection_matrix, vector4_t v) {
+    vector4_t result = mat4_multiply_vector(projection_matrix, v);
+
+    // Perspective division, divide original z-value which is stored in w
+    if (v.w != 0) {
+        result.x /= result.w;
+        result.y /= result.w;
+        result.z /= result.w;
+    }
+
+    return result;
+}
+
 mat4_t mat4_multiply_matrix(mat4_t a, mat4_t b) {
-    mat4_t result = {{
-        {0, 0, 0, 0},
-        {0, 0, 0, 0},
-        {0, 0, 0, 0},
-        {0, 0, 0, 0},
-    }};
+    mat4_t result = {{{0}}};
 
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < 4; j++) {

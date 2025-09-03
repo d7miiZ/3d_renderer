@@ -2,6 +2,8 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
+#include <math.h>
+
 #include <SDL3/SDL.h>
 
 #include <vector.h>
@@ -9,6 +11,9 @@
 #define SDL_INIT_ALL SDL_INIT_AUDIO | SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | SDL_INIT_GAMEPAD | SDL_INIT_EVENTS | SDL_INIT_SENSOR | SDL_INIT_CAMERA
 #define FPS 30
 #define FRAME_TIME (1000 / FPS)
+#define FOV (M_PI / 3.0)
+#define Z_NEAR 0.1
+#define Z_FAR 100.0
 
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;
@@ -18,6 +23,7 @@ extern uint32_t *color_buffer;
 
 extern uint32_t window_width;
 extern uint32_t window_height;
+extern float window_aspect_ratio;
 
 typedef uint32_t color_t;
 

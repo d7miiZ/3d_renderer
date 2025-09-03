@@ -12,6 +12,7 @@ color_t *color_buffer = NULL;
 
 uint32_t window_width = 800;
 uint32_t window_height = 600;
+float window_aspect_ratio = 0.0;
 
 bool init_window(void) {
     int count;
@@ -35,6 +36,7 @@ bool init_window(void) {
     }
     window_width = display_mode->w;
     window_height = display_mode->h;
+    window_aspect_ratio = (float)window_height / (float)window_width;
 
     window = SDL_CreateWindow(NULL, window_width, window_height, SDL_WINDOW_BORDERLESS);
     if (!window){
