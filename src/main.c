@@ -127,12 +127,15 @@ void update(void) {
         for (size_t j = 0; j < FACE_NUM_VERTICES; j++) {
             vector4_t transformed_vertex = vec4_from_vec3(vertices[j]);
 
+            // Transformations order is important
             transformed_vertex = mat4_multiply_vector(scale_matrix, transformed_vertex);
-            transformed_vertex = mat4_multiply_vector(translation_matrix, transformed_vertex);
+            
             transformed_vertex = mat4_multiply_vector(rotation_x_matrix, transformed_vertex);
             transformed_vertex = mat4_multiply_vector(rotation_y_matrix, transformed_vertex);
             transformed_vertex = mat4_multiply_vector(rotation_z_matrix, transformed_vertex);
 
+            transformed_vertex = mat4_multiply_vector(translation_matrix, transformed_vertex);
+            
             transformed_vertices[j] = transformed_vertex;
         }
 
