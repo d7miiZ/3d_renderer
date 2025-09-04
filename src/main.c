@@ -93,7 +93,6 @@ void update(void) {
     if (time_to_wait > 0) {
         SDL_Delay(time_to_wait);
     }
-    float sum_z_components = 0;
     
     prev_frame_time = SDL_GetTicks();
 
@@ -119,6 +118,7 @@ void update(void) {
         vector3_t vertices[FACE_NUM_VERTICES];
         vector4_t transformed_vertices[FACE_NUM_VERTICES];
         face_t face = mesh.faces[i];
+        float sum_z_components = 0;
 
         vertices[0] = mesh.vertices[face.a - 1];
         vertices[1] = mesh.vertices[face.b - 1];

@@ -44,7 +44,7 @@ vector3_t vec3_rotate_x(vector3_t vec3, float angle);
 vector3_t vec3_rotate_y(vector3_t vec3, float angle);
 vector3_t vec3_rotate_z(vector3_t vec3, float angle);
 
-float vec3_len(vector3_t vec3);
+float vec3_len(vector3_t *vec3);
 vector3_t vec3_add(vector3_t a, vector3_t b);
 vector3_t vec3_sub(vector3_t a, vector3_t b);
 vector3_t vec3_mul(vector3_t vec3, float scalar);

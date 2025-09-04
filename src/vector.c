@@ -52,8 +52,8 @@ void vec2_normalize(vector2_t *vec2) {
 
 // ===================================================== VEC3 Funcs ====================================
 
-float vec3_len(vector3_t vec3) {
-    return sqrt((vec3.x * vec3.x) + (vec3.y * vec3.y) + (vec3.z * vec3.z));
+float vec3_len(vector3_t *vec3) {
+    return sqrt((vec3->x * vec3->x) + (vec3->y * vec3->y) + (vec3->z * vec3->z));
 }
 
 vector3_t vec3_add(vector3_t a, vector3_t b) {
@@ -106,7 +106,7 @@ vector3_t vec3_div(vector3_t vec3, float scalar) {
 }
 
 void vec3_normalize(vector3_t *vec3) {
-    float vec_len = vec3_len(*vec3);
+    float vec_len = vec3_len(vec3);
     
     vec3->x /= vec_len;
     vec3->y /= vec_len;

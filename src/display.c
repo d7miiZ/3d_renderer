@@ -66,7 +66,7 @@ bool init_window(void) {
 }
 
 void draw_pixel(uint32_t x, uint32_t y, color_t color) {
-    if (x > window_width || y > window_height) {
+    if (x >= window_width || y >= window_height) {
         return;
     }
     
