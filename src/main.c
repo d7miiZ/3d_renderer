@@ -8,6 +8,7 @@
 #include <triangle.h>
 #include <darray.h>
 #include <matrix.h>
+#include <light.h>
 
 uint64_t prev_frame_time = 0;
 
@@ -102,10 +103,10 @@ void update(void) {
     mesh.rotations.y += 0.01;
     mesh.rotations.z += 0.01;
 
-    mesh.scale.x += 0.002;
-    mesh.scale.y += 0.002;
+    // mesh.scale.x += 0.002;
+    // mesh.scale.y += 0.002;
 
-    mesh.translation.x += 0.01;
+    // mesh.translation.x += 0.01;
     mesh.translation.z = 5.0;
 
     mat4_t scale_matrix = mat4_scale(mesh.scale.x, mesh.scale.y, mesh.scale.z);
@@ -129,9 +130,9 @@ void update(void) {
             // Transformations order is important
             mat4_t world_matrix = mat4_identity();
             world_matrix = mat4_multiply_matrix(scale_matrix, world_matrix);
-            world_matrix = mat4_multiply_matrix(rotation_x_matrix, world_matrix);
-            world_matrix = mat4_multiply_matrix(rotation_y_matrix, world_matrix);
             world_matrix = mat4_multiply_matrix(rotation_z_matrix, world_matrix);
+            world_matrix = mat4_multiply_matrix(rotation_y_matrix, world_matrix);
+            world_matrix = mat4_multiply_matrix(rotation_x_matrix, world_matrix);
             world_matrix = mat4_multiply_matrix(translation_matrix, world_matrix);
 
             transformed_vertex = mat4_multiply_vector(world_matrix, transformed_vertex);
@@ -139,23 +140,22 @@ void update(void) {
             transformed_vertices[j] = transformed_vertex;
         }
 
+        vector3_t vec_a = vec3_from_vec4(transformed_vertices[0]);
+        vector3_t vec_b = vec3_from_vec4(transformed_vertices[1]);
+        vector3_t vec_c = vec3_from_vec4(transformed_vertices[2]);
+
+        vector3_t vec_ab = vec3_sub(vec_b, vec_a);
+        vector3_t vec_ac = vec3_sub(vec_c, vec_a);
+        vec3_normalize(&vec_ab);
+        vec3_normalize(&vec_ac);
+
+        vector3_t vec_normal = vec3_cross(vec_ab, vec_ac);
+        vec3_normalize(&vec_normal);
+
         if (render_options.options.backface_culling) {
-            vector3_t vec_a = vec3_from_vec4(transformed_vertices[0]);
-            vector3_t vec_b = vec3_from_vec4(transformed_vertices[1]);
-            vector3_t vec_c = vec3_from_vec4(transformed_vertices[2]);
-
-            vector3_t vec_ab = vec3_sub(vec_b, vec_a);
-            vector3_t vec_ac = vec3_sub(vec_c, vec_a);
-            vec3_normalize(&vec_ab);
-            vec3_normalize(&vec_ac);
-
-            vector3_t vec_normal = vec3_cross(vec_ab, vec_ac);
-            vec3_normalize(&vec_normal);
-
             vector3_t camera_ray = vec3_sub(camera, vec_a);
 
             float alignment_val = vec3_dot(vec_normal, camera_ray);
-
             // Backface culling
             if (alignment_val < 0) {
                 continue;
@@ -176,7 +176,9 @@ void update(void) {
             
             sum_z_components += transformed_vertices[j].z;
         }
-
+        
+        float light_intensity = -vec3_dot(vec_normal, light.direction);
+        color_t color = light_apply_intensity(face.color, light_intensity);
         triangle_t projected_triangle = {
             .vertices = {
                 {projected_vertices[0].x, projected_vertices[0].y},
@@ -184,6 +186,7 @@ void update(void) {
                 {projected_vertices[2].x, projected_vertices[2].y},
             },
             .avg_depth = sum_z_components / FACE_NUM_VERTICES,
+            .color = color,
         };
 
         array_push(triangles, projected_triangle);
@@ -199,16 +202,16 @@ void render(void) {
 
     for (size_t i = 0; i < array_length(triangles); i++) {
         triangle_t triangle = triangles[i];
-        if (render_options.options.dots) {
-            for (size_t j = 0; j < FACE_NUM_VERTICES; j++) {
-                draw_rect(triangle.vertices[j].x, triangle.vertices[j].y, 4, 4, 0xFFFFFF00);
-            }
+        if (render_options.options.fill) {
+            draw_filled_triangle(triangle.vertices[0], triangle.vertices[1], triangle.vertices[2], triangle.color);
         }
         if (render_options.options.wireframe) {
             draw_triangle(triangle.vertices[0], triangle.vertices[1], triangle.vertices[2], 0xFFFFFFFF);
         }
-        if (render_options.options.fill) {
-            draw_filled_triangle(triangle.vertices[0], triangle.vertices[1], triangle.vertices[2], 0xFFFF00FF);
+        if (render_options.options.dots) {
+            for (size_t j = 0; j < FACE_NUM_VERTICES; j++) {
+                draw_rect(triangle.vertices[j].x, triangle.vertices[j].y, 4, 4, 0xFFFFFF00);
+            }
         }
     }
 

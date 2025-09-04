@@ -29,18 +29,18 @@ vector3_t cube_vertices[CUBE_VERTICES] = {
 };
 
 face_t cube_faces[CUBE_FACES] = {
-    { .a = 1, .b = 2, .c = 3},
-    { .a = 1, .b = 3, .c = 4},
-    { .a = 4, .b = 3, .c = 5},
-    { .a = 4, .b = 5, .c = 6},
-    { .a = 6, .b = 5, .c = 7},
-    { .a = 6, .b = 7, .c = 8},
-    { .a = 8, .b = 7, .c = 2},
-    { .a = 8, .b = 2, .c = 1},
-    { .a = 2, .b = 7, .c = 5},
-    { .a = 2, .b = 5, .c = 3},
-    { .a = 6, .b = 8, .c = 1},
-    { .a = 6, .b = 1, .c = 4},
+    { .a = 1, .b = 2, .c = 3, .color = 0xFFFFFFFF},
+    { .a = 1, .b = 3, .c = 4, .color = 0xFFFFFFFF},
+    { .a = 4, .b = 3, .c = 5, .color = 0xFFFFFFFF},
+    { .a = 4, .b = 5, .c = 6, .color = 0xFFFFFFFF},
+    { .a = 6, .b = 5, .c = 7, .color = 0xFFFFFFFF},
+    { .a = 6, .b = 7, .c = 8, .color = 0xFFFFFFFF},
+    { .a = 8, .b = 7, .c = 2, .color = 0xFFFFFFFF},
+    { .a = 8, .b = 2, .c = 1, .color = 0xFFFFFFFF},
+    { .a = 2, .b = 7, .c = 5, .color = 0xFFFFFFFF},
+    { .a = 2, .b = 5, .c = 3, .color = 0xFFFFFFFF},
+    { .a = 6, .b = 8, .c = 1, .color = 0xFFFFFFFF},
+    { .a = 6, .b = 1, .c = 4, .color = 0xFFFFFFFF},
 };
 
 void load_cube_mesh() {
@@ -115,6 +115,7 @@ void load_obj_file(const char *path) {
             face.a = index[0];
             face.b = index[1];
             face.c = index[2];
+            face.color = 0xFFFFFFFF;
             array_push(mesh.faces, face);
         }
     }

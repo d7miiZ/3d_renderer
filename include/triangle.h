@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include <vector.h>
+#include <display.h>
 
 #define FACE_NUM_VERTICES 3
 
@@ -12,11 +13,13 @@ typedef struct {
     uint32_t a;
     uint32_t b;
     uint32_t c;
+    color_t color;
 } face_t;
 
 typedef struct {
     vector2_t vertices[3];
     float avg_depth;
+    color_t color;
 } triangle_t;
 
 void draw_filled_triangle(vector2_t vec0, vector2_t vec1, vector2_t vec2, uint32_t color);
