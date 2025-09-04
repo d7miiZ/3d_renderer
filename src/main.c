@@ -171,12 +171,16 @@ void update(void) {
             projected_vertices[j].x *= (window_width / 2.0);
             projected_vertices[j].y *= (window_height / 2.0);
 
+            projected_vertices[j].y *= -1;
+
             projected_vertices[j].x += (window_width / 2.0);
             projected_vertices[j].y += (window_height / 2.0);
             
             sum_z_components += transformed_vertices[j].z;
         }
         
+        // Flat shading
+        // TODO: Implement smooth shading
         float light_intensity = -vec3_dot(vec_normal, light.direction);
         color_t color = light_apply_intensity(face.color, light_intensity);
         triangle_t projected_triangle = {
