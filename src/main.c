@@ -9,22 +9,38 @@
 #include <darray.h>
 #include <matrix.h>
 #include <light.h>
+#include <texture.h>
 
 uint64_t prev_frame_time = 0;
 
-union {
-    struct {
-        uint8_t wireframe: 1;
-        uint8_t dots: 1;
-        uint8_t fill: 1;
-        uint8_t backface_culling: 1;
-        uint8_t resrev1: 1;
-        uint8_t resrev2: 1;
-        uint8_t resrev3: 1;
-        uint8_t resrev4: 1;
-    } options;
-    uint8_t flags;
-} render_options = { .options = {0, 0, 1, 1, 0, 0, 0, 0} };
+struct {
+    union {
+        struct {
+            uint8_t wireframe: 1;
+            uint8_t dots: 1;
+            uint8_t fill: 1;
+            uint8_t texture: 1;
+            uint8_t resrev1: 1;
+            uint8_t resrev2: 1;
+            uint8_t resrev3: 1;
+            uint8_t resrev4: 1;
+        } options;
+        uint8_t flags;
+    } render;
+    union {
+        struct {
+            uint8_t backface_culling: 1;
+            uint8_t resrev1: 1;
+            uint8_t resrev2: 1;
+            uint8_t resrev3: 1;
+            uint8_t resrev4: 1;
+            uint8_t resrev5: 1;
+            uint8_t resrev6: 1;
+            uint8_t resrev7: 1;
+        } options;
+        uint8_t flags;
+    } optimization;
+} config = { .render = { .options = {0, 0, 1, 0, 0, 0, 0, 0} }, .optimization = { .options = {1, 0, 1, 0, 0, 0, 0, 0} } };
 
 vector3_t camera = { .x = 0, .y = 0, .z = 0};
 
@@ -39,7 +55,13 @@ int _depth_sort(const void *_a, const void *_b) {
 }
 
 bool setup(const char *path) {
-    load_obj_file(path);
+    // load_obj_file(path);
+    load_cube_mesh();
+
+    // TODO: load texture from file
+    texture_height = 64;
+    texture_width = 64;
+    mesh_texture = (color_t*) REDBRICK_TEXTURE;
     return true;
 }
 
@@ -56,30 +78,37 @@ void process_input(void) {
             is_running = false;
         }
         if (event.key.key == SDLK_1) {
-            render_options.options.dots = 1;
-            render_options.options.wireframe = 1;
-            render_options.options.fill = 0;
+            config.render.flags = 0;
+            config.render.options.dots = 1;
+            config.render.options.wireframe = 1;
         }
         if (event.key.key == SDLK_2) {
-            render_options.options.dots = 0;
-            render_options.options.wireframe = 1;
-            render_options.options.fill = 0;
+            config.render.flags = 0;
+            config.render.options.wireframe = 1;
         }
         if (event.key.key == SDLK_3) {
-            render_options.options.dots = 0;
-            render_options.options.wireframe = 0;
-            render_options.options.fill = 1;
+            config.render.flags = 0;
+            config.render.options.fill = 1;
         }
         if (event.key.key == SDLK_4) {
-            render_options.options.dots = 0;
-            render_options.options.wireframe = 1;
-            render_options.options.fill = 1;
+            config.render.flags = 0;
+            config.render.options.wireframe = 1;
+            config.render.options.fill = 1;
+        }
+        if (event.key.key == SDLK_5) {
+            config.render.flags = 0;
+            config.render.options.texture = 1;
+        }
+        if (event.key.key == SDLK_6) {
+            config.render.flags = 0;
+            config.render.options.wireframe = 1;
+            config.render.options.texture = 1;
         }
         if (event.key.key == SDLK_C) {
-            render_options.options.backface_culling = 1;
+            config.optimization.options.backface_culling = 1;
         }
         if (event.key.key == SDLK_D) {
-            render_options.options.backface_culling = 0;
+            config.optimization.options.backface_culling = 0;
         }
         break;
     default:
@@ -152,7 +181,7 @@ void update(void) {
         vector3_t vec_normal = vec3_cross(vec_ab, vec_ac);
         vec3_normalize(&vec_normal);
 
-        if (render_options.options.backface_culling) {
+        if (config.optimization.options.backface_culling) {
             vector3_t camera_ray = vec3_sub(camera, vec_a);
 
             float alignment_val = vec3_dot(vec_normal, camera_ray);
@@ -189,6 +218,11 @@ void update(void) {
                 {projected_vertices[1].x, projected_vertices[1].y},
                 {projected_vertices[2].x, projected_vertices[2].y},
             },
+            .tex_coords = {
+                {face.a_uv.u, face.a_uv.v},
+                {face.b_uv.u, face.b_uv.v},
+                {face.c_uv.u, face.c_uv.v},
+            },
             .avg_depth = sum_z_components / FACE_NUM_VERTICES,
             .color = color,
         };
@@ -206,13 +240,16 @@ void render(void) {
 
     for (size_t i = 0; i < array_length(triangles); i++) {
         triangle_t triangle = triangles[i];
-        if (render_options.options.fill) {
+        if (config.render.options.fill) {
             draw_filled_triangle(triangle.vertices[0], triangle.vertices[1], triangle.vertices[2], triangle.color);
         }
-        if (render_options.options.wireframe) {
+        if (config.render.options.texture) {
+            draw_textured_triangle(triangle.vertices[0], triangle.vertices[1], triangle.vertices[2], triangle.tex_coords[0], triangle.tex_coords[1], triangle.tex_coords[2], mesh_texture);
+        }
+        if (config.render.options.wireframe) {
             draw_triangle(triangle.vertices[0], triangle.vertices[1], triangle.vertices[2], 0xFFFFFFFF);
         }
-        if (render_options.options.dots) {
+        if (config.render.options.dots) {
             for (size_t j = 0; j < FACE_NUM_VERTICES; j++) {
                 draw_rect(triangle.vertices[j].x, triangle.vertices[j].y, 4, 4, 0xFFFFFF00);
             }
